@@ -1,87 +1,70 @@
+import 'package:counter_app/feature/home/cubit/Counter_cubit.dart';
+import 'package:counter_app/widget/custom_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CounterScreen extends StatefulWidget {
+class CounterScreen extends StatelessWidget {
   const CounterScreen({super.key});
 
   @override
-  State<CounterScreen> createState() => _CounterScreenState();
-}
-
-class _CounterScreenState extends State<CounterScreen> {
-  int number = 0;
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-            child: Text(
-          'Counter App',
-          style: TextStyle(color: Colors.white, fontSize: 22),
-        )),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$number',
-              style: const TextStyle(fontSize: 16),
+    return BlocBuilder<CounterCubit, double>(
+      builder: (context, state) {
+        CounterCubit cubit = BlocProvider.of(context);
+        return Scaffold(
+          appBar: AppBar(
+            title: const Center(
+              child: Text(
+                'Counter App',
+                style: TextStyle(color: Colors.white, fontSize: 22),
+              ),
             ),
-            Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    color: const Color.fromARGB(255, 196, 167, 201)),
-                child: buildwidget(
-                    onpressed: () {
-                      setState(() {
-                        number += 10;
-                      });
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  state.toString(),
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                CustomContainer(
+                  widgett: buildWidget(
+                    onPressed: () {
+                      cubit.increment();
                     },
-                    icon: const Icon(Icons.text_increase))),
-            SizedBox(
-              height: 20,
+                    icon: const Icon(Icons.plus_one),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                CustomContainer(
+                  widgett: buildWidget(
+                    onPressed: () {
+                      cubit.decrement();
+                    },
+                    icon: const Icon(Icons.exposure_minus_1_outlined),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                CustomContainer(
+                  widgett: buildWidget(
+                    onPressed: cubit.reset,
+                    icon: const Icon(Icons.restart_alt),
+                  ),
+                ),
+              ],
             ),
-            Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    color: const Color.fromARGB(255, 196, 167, 201)),
-                child: buildwidget(
-                    onpressed: () {
-                      setState(() {
-                        if(number>0)
-                        number -= 10;
-                      });
-                    },
-                    icon: const Icon(Icons.text_decrease))),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    color: const Color.fromARGB(255, 196, 167, 201)),
-                child: buildwidget(
-                    onpressed: () {
-                      setState(() {
-                        number = 0;
-                      });
-                    },
-                    icon: const Icon(Icons.reset_tv)))
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
-}
 
-Widget buildwidget(
-    {required void Function()? onpressed, required Widget icon}) {
-  return IconButton(onPressed: onpressed, icon: icon);
+  Widget buildWidget({
+    required void Function()? onPressed,
+    required Widget icon,
+  }) {
+    return IconButton(onPressed: onPressed, icon: icon);
+  }
 }
